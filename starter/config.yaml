@@ -1,6 +1,8 @@
 PATH : 
   relative_data_path: "data/census.csv"
   model_path : "model/dt_model.pkl"
+  encoder_path: "model/encoder.pkl"
+  lb_path: "model/lb.pkl"
 DATA_PROC :
   cat_features: 
     - "workclass"
@@ -15,5 +17,5 @@ DATA_PROC :
   test_size : 0.2
 MODEL_PARAMS :
   criterion : gini
-  max_depth : 7
-  max_features : 20
+  n_estimators : 30
+  max_depth : 10
