@@ -1,0 +1,19 @@
+PATH : 
+  relative_data_path: "data/census.csv"
+  model_path : "model/dt_model.pkl"
+DATA_PROC :
+  cat_features: 
+    - "workclass"
+    - "education"
+    - "marital-status"
+    - "occupation"
+    - "relationship"
+    - "race"
+    - "sex"
+    - "native-country"
+  label : "salary"
+  test_size : 0.2
+MODEL_PARAMS :
+  criterion : gini
+  max_depth : 7
+  max_features : 20
