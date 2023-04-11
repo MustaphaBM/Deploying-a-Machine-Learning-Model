@@ -72,9 +72,9 @@ def run_pipeline(data_path, categorical_features, target_column, model_hyperpara
     preds = inference(model, X_test)
     precision, recall, fbeta = compute_model_metrics(y_test,preds)
 
-    logging.info(f"{precision=}.")
-    logging.info(f"{recall=}.")
-    logging.info(f"{fbeta=}.")
+    logging.info(f"Precision : {precision}.")
+    logging.info(f"Recall : {recall}.")
+    logging.info(f"FBeta : {fbeta}.")
 
     
     logging.info(f"Model was successfully saved in {model_file}.")
