@@ -68,19 +68,15 @@ def run_pipeline(data_path, categorical_features, target_column, model_hyperpara
     with open(lb_path, "wb") as lb_file:
         pickle.dump(lb, lb_file)
     
-    with open(config["PATH"]["model_path"], "rb") as model_file:
-        model = pickle.load(model_file)
-    with open(config["PATH"]["encoder_path"], "rb") as encoder_file:
-        encoder = pickle.load(encoder_file)
-    with open(config["PATH"]["lb_path"], "rb") as lb_file:
-        lb = pickle.load(lb_file)
     X_test, y_test, _, _ = process_data(test,categorical_features=categorical_features,training=False, label=target_column,encoder=encoder,lb=lb)
     preds = inference(model, X_test)
-    #compute_model_metrics(y_test,preds)
+    precision, recall, fbeta = compute_model_metrics(y_test,preds)
 
-    print(preds == 1)
-    print(test[preds == 1])
-    #print(preds)
+    logging.info(f"{precision=}.")
+    logging.info(f"{recall=}.")
+    logging.info(f"{fbeta=}.")
+
+    
     logging.info(f"Model was successfully saved in {model_file}.")
 
 
