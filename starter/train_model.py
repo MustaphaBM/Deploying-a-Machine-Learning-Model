@@ -26,6 +26,34 @@ def get_config():
             logging.error(exc)
     return config
 
+def compute_metrics_for_slices(categorical_features, config, raw_test_data):
+    """Runs inference on different slices and compute mterics for each slice
+
+    Args:
+        categorical_features (list): List of categorical features
+        config (dict): the configuration of the pipelines
+        raw_test_data (pd.Dataframe): test set
+    """
+    with open(config["PATH"]["model_path"], "rb") as model_file:
+            model = pickle.load(model_file)
+    with open(config["PATH"]["encoder_path"], "rb") as encoder_file:
+        encoder = pickle.load(encoder_file)
+    with open(config["PATH"]["lb_path"], "rb") as lb_file:
+        lb = pickle.load(lb_file)
+
+    metrics_lst = []
+    for feature in categorical_features:
+        for category in raw_test_data[feature].unique():
+            raw_slice = raw_test_data[raw_test_data[feature]==category]
+            X_processed_slice, y_processed_slice, _, _= process_data(raw_slice,categorical_features=config["DATA_PROC"]["cat_features"],label="salary", training=False, encoder=encoder,lb=lb)
+            preds = inference(model=model,X=X_processed_slice)
+            precision,recall,fbeta = compute_model_metrics(y_processed_slice,preds)
+            metrics = f"(Feature,Category) ({feature},{category}) : Precision = {round(precision,3)}"\
+            f" Recall = {round(recall,3)} Fbeta = {round(fbeta,3)}\n"
+            metrics_lst.append(metrics)
+    with open(config["PATH"]["slice_file"],"w") as slice_file:
+            slice_file.writelines(metrics_lst)
+    
 def run_pipeline(data_path, categorical_features, target_column, model_hyperparams, model_path, encoder_path, lb_path, test_size=0.2):
     """Processes the data, train a decision tree model and save it to disk
 
@@ -58,6 +86,8 @@ def run_pipeline(data_path, categorical_features, target_column, model_hyperpara
     # Train and save a model.
     model = train_model(X_train=X_train, y_train=y_train, model_config=model_hyperparams)
     logging.info("Model was successfully trained.")
+    logging.info(f"Model was successfully saved in {config['PATH']['model_path']}.")
+
 
     with open(model_path, "wb") as model_file:
         pickle.dump(model, model_file)
@@ -76,8 +106,9 @@ def run_pipeline(data_path, categorical_features, target_column, model_hyperpara
     logging.info(f"Recall : {recall}.")
     logging.info(f"FBeta : {fbeta}.")
 
+    compute_metrics_for_slices(config["DATA_PROC"]["cat_features"], config,test)
+    logging.info(f"Slice metrics saved under: {config['PATH']['slice_file']}.")
     
-    logging.info(f"Model was successfully saved in {model_file}.")
 
 
 if __name__ == "__main__":

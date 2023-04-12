@@ -3,6 +3,7 @@ PATH :
   model_path : "model/dt_model.pkl"
   encoder_path: "model/encoder.pkl"
   lb_path: "model/lb.pkl"
+  slice_file: "slice_output.txt"
 DATA_PROC :
   cat_features: 
     - "workclass"
