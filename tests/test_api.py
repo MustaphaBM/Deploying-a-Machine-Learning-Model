@@ -1,5 +1,7 @@
 import pytest
+import sys
 from fastapi.testclient import TestClient
+sys.path.insert(0,"./")
 
 from main import Employee, app
 
